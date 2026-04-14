@@ -1,17 +1,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-void yyerror(const char *s);
-int yylex();
 %}
 
-%union {
-    int num;
-    char* str;
-}
-
-%token INT FLOAT ID NUMBER
-%token ASSIGN PLUS MINUS MUL DIV SEMICOLON
+%token PRINT NUMBER ID SEMICOLON
 
 %%
 
@@ -21,31 +13,22 @@ program:
     ;
 
 statement:
-    declaration SEMICOLON
-    | assignment SEMICOLON
-    ;
+    PRINT NUMBER SEMICOLON
+        { printf("print(%d)\n", $2); }
 
-declaration:
-    INT ID ASSIGN NUMBER
-    {
-        printf("%s = %d\n", yytext, $4);
-    }
-    ;
-
-assignment:
-    ID ASSIGN NUMBER
-    {
-        printf("%s = %d\n", yytext, $3);
-    }
+    | PRINT ID SEMICOLON
+        { printf("print(%s)\n", "var"); }
     ;
 
 %%
 
-void yyerror(const char *s) {
-    printf("Error: %s\n", s);
+int main() {
+    printf("=== Mini Compiler Start ===\n");
+    yyparse();
+    printf("=== Compilation Finished ===\n");
+    return 0;
 }
 
-int main() {
-    yyparse();
-    return 0;
+int yyerror(char *s) {
+    printf("Error: %s\n", s);
 }
